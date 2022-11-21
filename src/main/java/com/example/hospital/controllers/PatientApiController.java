@@ -2,6 +2,7 @@ package com.example.hospital.controllers;
 
 import com.example.hospital.entities.Patient;
 import com.example.hospital.services.PatientService;
+import com.example.hospital.utils.PatientUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -39,35 +40,12 @@ public class PatientApiController {
 
     @PatchMapping(path="/{id}", consumes= "application/json")
     public Patient partialUpdate(@PathVariable("id") long id, @RequestBody Patient patchPatient) {
-        Patient patient = patientService.findByPatientId(id);
-
-        if(patchPatient.getEmail() != null) {
-            patient.setEmail(patchPatient.getEmail());
-        }
-        if(patchPatient.getName() != null) {
-            patient.setName(patchPatient.getName());
-        }
-        if(patchPatient.getSurname() != null) {
-            patient.setSurname(patchPatient.getSurname());
-        }
-        if(patchPatient.getPhone() != null) {
-            patient.setPhone(patchPatient.getPhone());
-        }
-        if(patchPatient.getPesel() != null) {
-            patient.setPesel(patchPatient.getPesel());
-        }
-        if(patchPatient.getCity() != null) {
-            patient.setCity(patchPatient.getCity());
-        }
-        if(patchPatient.getCountry() != null) {
-            patient.setCountry(patchPatient.getCountry());
-        }
-        if(patchPatient.getPostalCode() != null) {
-            patient.setPostalCode(patchPatient.getPostalCode());
-        }
+        Patient patient = PatientUtils.validatePatient(patchPatient, patientService.findByPatientId(id));
 
         return patientService.save(patient);
     }
+
+
 
 
     @DeleteMapping("/{id}")
