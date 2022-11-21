@@ -4,6 +4,7 @@ import com.example.hospital.entities.Visit;
 import com.example.hospital.services.DoctorService;
 import com.example.hospital.services.PatientService;
 import com.example.hospital.services.VisitService;
+import com.example.hospital.utils.VisitUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -51,20 +52,11 @@ public class VisitApiController {
 
     @PatchMapping(path = "/{id}/{patient}/{doctor}", consumes = "application/json")
     public Visit partialUpdate(@PathVariable("id") long id, @RequestBody Visit patchVisit, @PathVariable("patient") Long patient, @PathVariable("doctor") Long doctor) {
-        Visit visit = visitService.findByVisitId(id);
+        Visit visit = VisitUtils.validateVisit(patchVisit,  visitService.findByVisitId(id));
         visit.setDoctor(doctorService.findByDoctorId(doctor));
         visit.setPatient(patientService.findByPatientId(patient));
-
-        if (patchVisit.getVisitDate() != null) {
-            visit.setVisitDate(patchVisit.getVisitDate());
-        }
-        if (patchVisit.getTypeVisit() != null) {
-            visit.setTypeVisit(patchVisit.getTypeVisit());
-        }
-
         return visitService.save(visit);
     }
-
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
